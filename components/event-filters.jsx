@@ -5,20 +5,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
-import type { Category } from "@/lib/types"
 
-interface EventFiltersProps {
-  categories: Category[]
-}
-
-export function EventFilters({ categories }: EventFiltersProps) {
+export function EventFilters({ categories }) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const currentCategory = searchParams.get("category") || "all"
   const currentDate = searchParams.get("date") || ""
 
-  const updateFilter = (key: string, value: string) => {
+  const updateFilter = (key, value) => {
     const params = new URLSearchParams(searchParams.toString())
     if (value) {
       params.set(key, value)
@@ -52,14 +47,15 @@ export function EventFilters({ categories }: EventFiltersProps) {
 
       <Input
         type="date"
+        placeholder="Filter by date"
         value={currentDate}
         onChange={(e) => updateFilter("date", e.target.value)}
         className="w-[180px]"
       />
 
       {hasFilters && (
-        <Button variant="ghost" size="sm" onClick={clearFilters}>
-          <X className="h-4 w-4 mr-1" />
+        <Button variant="outline" size="sm" onClick={clearFilters}>
+          <X className="h-4 w-4 mr-2" />
           Clear Filters
         </Button>
       )}

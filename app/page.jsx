@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { EventCard } from "@/components/event-card"
 import Link from "next/link"
 import { Calendar, Users, Building2, ArrowRight } from "lucide-react"
-import type { Event, Profile } from "@/lib/types"
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -13,7 +12,7 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  let profile: Profile | null = null
+  let profile = null
   if (user) {
     const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single()
     profile = data
@@ -104,7 +103,7 @@ export default async function HomePage() {
             {events && events.length > 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {events.map((event) => (
-                  <EventCard key={event.id} event={event as Event} />
+                  <EventCard key={event.id} event={event} />
                 ))}
               </div>
             ) : (

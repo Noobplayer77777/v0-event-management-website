@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Ticket } from "lucide-react"
 import Link from "next/link"
-import type { Event, Profile } from "@/lib/types"
 
 export default async function StudentDashboard() {
   const supabase = await createClient()
@@ -20,11 +19,9 @@ export default async function StudentDashboard() {
 
   if (!profile) redirect("/auth/login")
 
-  // Redirect club admins and super admins to their dashboards
   if (profile.role === "super_admin") redirect("/dashboard/admin")
   if (profile.role === "club_admin") redirect("/dashboard/club")
 
-  // Get user's registered events
   const { data: registrations } = await supabase
     .from("registrations")
     .select("*, event:events(*, category:categories(*))")
@@ -32,12 +29,11 @@ export default async function StudentDashboard() {
     .order("registered_at", { ascending: false })
 
   const upcomingEvents = registrations?.filter((r) => r.event && new Date(r.event.date) >= new Date()) || []
-
   const pastEvents = registrations?.filter((r) => r.event && new Date(r.event.date) < new Date()) || []
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar user={profile as Profile} />
+      <Navbar user={profile} />
 
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="mb-8">
@@ -71,7 +67,7 @@ export default async function StudentDashboard() {
             {upcomingEvents.length > 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {upcomingEvents.map((reg) => (
-                  <EventCard key={reg.id} event={reg.event as Event} />
+                  <EventCard key={reg.id} event={reg.event} />
                 ))}
               </div>
             ) : (
@@ -88,7 +84,7 @@ export default async function StudentDashboard() {
             {pastEvents.length > 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pastEvents.map((reg) => (
-                  <EventCard key={reg.id} event={reg.event as Event} />
+                  <EventCard key={reg.id} event={reg.event} />
                 ))}
               </div>
             ) : (

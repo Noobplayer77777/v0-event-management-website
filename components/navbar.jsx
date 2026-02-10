@@ -12,13 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Calendar, User, LogOut, LayoutDashboard } from "lucide-react"
-import type { Profile } from "@/lib/types"
 
-interface NavbarProps {
-  user: Profile | null
-}
-
-export function Navbar({ user }: NavbarProps) {
+export function Navbar({ user }) {
   const router = useRouter()
   const supabase = createClient()
 

@@ -5,7 +5,6 @@ import { EventForm } from "@/components/event-form"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import type { Profile, Category } from "@/lib/types"
 
 export default async function CreateEventPage() {
   const supabase = await createClient()
@@ -25,7 +24,7 @@ export default async function CreateEventPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar user={profile as Profile} />
+      <Navbar user={profile} />
 
       <main className="flex-1 container mx-auto px-4 py-8 max-w-2xl">
         <Button variant="ghost" asChild className="mb-6">
@@ -40,7 +39,7 @@ export default async function CreateEventPage() {
           <p className="text-muted-foreground">Fill in the details to create a new event</p>
         </div>
 
-        <EventForm categories={(categories || []) as Category[]} />
+        <EventForm categories={categories || []} />
       </main>
     </div>
   )
