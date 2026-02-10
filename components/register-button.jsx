@@ -6,14 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-interface RegisterButtonProps {
-  eventId: string
-  isLoggedIn: boolean
-  isRegistered: boolean
-  isFull: boolean
-}
-
-export function RegisterButton({ eventId, isLoggedIn, isRegistered, isFull }: RegisterButtonProps) {
+export function RegisterButton({ eventId, isLoggedIn, isRegistered, isFull }) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -21,6 +14,14 @@ export function RegisterButton({ eventId, isLoggedIn, isRegistered, isFull }: Re
     return (
       <Button asChild className="w-full">
         <Link href="/auth/login">Login to Register</Link>
+      </Button>
+    )
+  }
+
+  if (isFull && !isRegistered) {
+    return (
+      <Button disabled className="w-full">
+        Event Full
       </Button>
     )
   }
@@ -49,25 +50,9 @@ export function RegisterButton({ eventId, isLoggedIn, isRegistered, isFull }: Re
     }
   }
 
-  if (isRegistered) {
-    return (
-      <Button variant="outline" className="w-full bg-transparent" onClick={handleRegister} disabled={isLoading}>
-        {isLoading ? "Processing..." : "Cancel Registration"}
-      </Button>
-    )
-  }
-
-  if (isFull) {
-    return (
-      <Button disabled className="w-full">
-        Event Full
-      </Button>
-    )
-  }
-
   return (
-    <Button className="w-full" onClick={handleRegister} disabled={isLoading}>
-      {isLoading ? "Processing..." : "Register for Event"}
+    <Button onClick={handleRegister} disabled={isLoading} className="w-full" variant={isRegistered ? "outline" : "default"}>
+      {isLoading ? "Loading..." : isRegistered ? "Unregister" : "Register"}
     </Button>
   )
 }
