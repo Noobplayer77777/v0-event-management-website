@@ -17,11 +17,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Trash2 } from "lucide-react"
 
-interface DeleteEventButtonProps {
-  eventId: string
-}
-
-export function DeleteEventButton({ eventId }: DeleteEventButtonProps) {
+export function DeleteEventButton({ eventId }) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -52,19 +48,13 @@ export function DeleteEventButton({ eventId }: DeleteEventButtonProps) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the event and all associated registrations.
-          </AlertDialogDescription>
+          <AlertDialogTitle>Delete Event</AlertDialogTitle>
+          <AlertDialogDescription>This action cannot be undone. Are you sure?</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={isLoading}
-            className="bg-destructive text-white hover:bg-destructive/90"
-          >
-            {isLoading ? "Deleting..." : "Delete Event"}
+          <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
+            {isLoading ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

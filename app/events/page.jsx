@@ -2,14 +2,9 @@ import { createClient } from "@/lib/supabase/server"
 import { Navbar } from "@/components/navbar"
 import { EventCard } from "@/components/event-card"
 import { EventFilters } from "@/components/event-filters"
-import type { Event, Profile, Category } from "@/lib/types"
 import { Calendar } from "lucide-react"
 
-interface EventsPageProps {
-  searchParams: Promise<{ category?: string; date?: string }>
-}
-
-export default async function EventsPage({ searchParams }: EventsPageProps) {
+export default async function EventsPage({ searchParams }) {
   const params = await searchParams
   const supabase = await createClient()
 
@@ -17,7 +12,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  let profile: Profile | null = null
+  let profile = null
   if (user) {
     const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single()
     profile = data
@@ -55,12 +50,12 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
           <p className="text-muted-foreground">Discover exciting events happening on campus</p>
         </div>
 
-        <EventFilters categories={(categories || []) as Category[]} />
+        <EventFilters categories={categories || []} />
 
         {events && events.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
-              <EventCard key={event.id} event={event as Event} />
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
         ) : (

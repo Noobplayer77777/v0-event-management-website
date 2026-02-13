@@ -1,22 +1,13 @@
 "use client"
 
-import type React from "react"
-
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar, MapPin, Users } from "lucide-react"
-import type { Event } from "@/lib/types"
 import { format } from "date-fns"
 import Link from "next/link"
 
-interface EventCardProps {
-  event: Event
-  showStatus?: boolean
-  actionButton?: React.ReactNode
-}
-
-export function EventCard({ event, showStatus, actionButton }: EventCardProps) {
+export function EventCard({ event, showStatus, actionButton }) {
   return (
     <Card className="flex flex-col overflow-hidden transition-shadow hover:shadow-lg">
       <div className="aspect-video bg-muted relative">
@@ -47,33 +38,34 @@ export function EventCard({ event, showStatus, actionButton }: EventCardProps) {
         </div>
       </CardHeader>
       <CardContent className="flex-1">
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-          {event.description || "No description available"}
-        </p>
-        <div className="space-y-1.5 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>{format(new Date(event.date), "PPP 'at' p")}</span>
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{event.description}</p>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <span>{format(new Date(event.date), "MMM dd, yyyy HH:mm")}</span>
           </div>
           {event.location && (
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
+            <div className="flex items-center gap-2 text-sm">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
               <span className="line-clamp-1">{event.location}</span>
             </div>
           )}
-          {event.max_capacity && (
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
+          {event.registration_count !== undefined && (
+            <div className="flex items-center gap-2 text-sm">
+              <Users className="h-4 w-4 text-muted-foreground" />
               <span>
-                {event.registration_count ?? 0} / {event.max_capacity} registered
+                {event.registration_count}
+                {event.max_capacity ? `/${event.max_capacity}` : ""} registered
               </span>
             </div>
           )}
         </div>
       </CardContent>
-      <CardFooter className="pt-0">
-        {actionButton || (
-          <Button asChild className="w-full">
+      <CardFooter>
+        {actionButton ? (
+          actionButton
+        ) : (
+          <Button className="w-full" asChild>
             <Link href={`/events/${event.id}`}>View Details</Link>
           </Button>
         )}

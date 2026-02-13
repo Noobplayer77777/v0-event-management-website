@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,12 +16,12 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
   const [fullName, setFullName] = useState("")
-  const [role, setRole] = useState<"student" | "club_admin">("student")
-  const [error, setError] = useState<string | null>(null)
+  const [role, setRole] = useState("student")
+  const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignUp = async (e) => {
     e.preventDefault()
     const supabase = createClient()
     setIsLoading(true)
@@ -40,8 +38,7 @@ export default function SignUpPage() {
         email,
         password,
         options: {
-          emailRedirectTo:
-            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard/student`,
+          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard/student`,
           data: {
             full_name: fullName,
             role: role,
@@ -50,7 +47,7 @@ export default function SignUpPage() {
       })
       if (error) throw error
       router.push("/auth/sign-up-success")
-    } catch (error: unknown) {
+    } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
       setIsLoading(false)
@@ -99,7 +96,7 @@ export default function SignUpPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="role">Account Type</Label>
-                    <Select value={role} onValueChange={(v) => setRole(v as "student" | "club_admin")}>
+                    <Select value={role} onValueChange={(v) => setRole(v)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select account type" />
                       </SelectTrigger>

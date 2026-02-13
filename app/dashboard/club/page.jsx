@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Plus, Clock, CheckCircle, XCircle } from "lucide-react"
 import Link from "next/link"
-import type { Event, Profile } from "@/lib/types"
 
 export default async function ClubDashboard() {
   const supabase = await createClient()
@@ -22,14 +21,12 @@ export default async function ClubDashboard() {
     redirect("/dashboard/student")
   }
 
-  // Get events created by this user with registration counts
   const { data: events } = await supabase
     .from("events")
     .select("*, category:categories(*)")
     .eq("created_by", user.id)
     .order("created_at", { ascending: false })
 
-  // Get registration counts for each event
   const eventsWithCounts = await Promise.all(
     (events || []).map(async (event) => {
       const { count } = await supabase
@@ -46,7 +43,7 @@ export default async function ClubDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar user={profile as Profile} />
+      <Navbar user={profile} />
 
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
@@ -86,131 +83,60 @@ export default async function ClubDashboard() {
           </div>
         </div>
 
-        <Tabs defaultValue="all">
+        <Tabs defaultValue="approved">
           <TabsList>
-            <TabsTrigger value="all">All ({eventsWithCounts.length})</TabsTrigger>
-            <TabsTrigger value="pending">Pending ({pendingEvents.length})</TabsTrigger>
             <TabsTrigger value="approved">Approved ({approvedEvents.length})</TabsTrigger>
+            <TabsTrigger value="pending">Pending ({pendingEvents.length})</TabsTrigger>
             <TabsTrigger value="rejected">Rejected ({rejectedEvents.length})</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="all" className="mt-6">
-            {eventsWithCounts.length > 0 ? (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {eventsWithCounts.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event as Event}
-                    showStatus
-                    actionButton={
-                      <div className="flex gap-2 w-full">
-                        <Button asChild variant="outline" className="flex-1 bg-transparent">
-                          <Link href={`/dashboard/club/events/${event.id}`}>View</Link>
-                        </Button>
-                        <Button asChild className="flex-1">
-                          <Link href={`/dashboard/club/events/${event.id}/edit`}>Edit</Link>
-                        </Button>
-                      </div>
-                    }
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyState />
-            )}
-          </TabsContent>
-
-          <TabsContent value="pending" className="mt-6">
-            {pendingEvents.length > 0 ? (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pendingEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event as Event}
-                    showStatus
-                    actionButton={
-                      <div className="flex gap-2 w-full">
-                        <Button asChild variant="outline" className="flex-1 bg-transparent">
-                          <Link href={`/dashboard/club/events/${event.id}`}>View</Link>
-                        </Button>
-                        <Button asChild className="flex-1">
-                          <Link href={`/dashboard/club/events/${event.id}/edit`}>Edit</Link>
-                        </Button>
-                      </div>
-                    }
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyState message="No pending events" />
-            )}
-          </TabsContent>
-
           <TabsContent value="approved" className="mt-6">
             {approvedEvents.length > 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {approvedEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event as Event}
-                    showStatus
-                    actionButton={
-                      <div className="flex gap-2 w-full">
-                        <Button asChild variant="outline" className="flex-1 bg-transparent">
-                          <Link href={`/dashboard/club/events/${event.id}`}>View</Link>
-                        </Button>
-                        <Button asChild className="flex-1">
-                          <Link href={`/dashboard/club/events/${event.id}/edit`}>Edit</Link>
-                        </Button>
-                      </div>
-                    }
-                  />
+                  <EventCard key={event.id} event={event} showStatus actionButton={<Button className="w-full" asChild>
+                    <Link href={`/dashboard/club/events/${event.id}`}>View Details</Link>
+                  </Button>} />
                 ))}
               </div>
             ) : (
-              <EmptyState message="No approved events" />
+              <div className="text-center py-12 text-muted-foreground">
+                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No approved events</p>
+              </div>
             )}
           </TabsContent>
-
+          <TabsContent value="pending" className="mt-6">
+            {pendingEvents.length > 0 ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pendingEvents.map((event) => (
+                  <EventCard key={event.id} event={event} showStatus actionButton={<Button className="w-full" asChild>
+                    <Link href={`/dashboard/club/events/${event.id}/edit`}>Edit</Link>
+                  </Button>} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No pending events</p>
+              </div>
+            )}
+          </TabsContent>
           <TabsContent value="rejected" className="mt-6">
             {rejectedEvents.length > 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {rejectedEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event as Event}
-                    showStatus
-                    actionButton={
-                      <div className="flex gap-2 w-full">
-                        <Button asChild variant="outline" className="flex-1 bg-transparent">
-                          <Link href={`/dashboard/club/events/${event.id}`}>View</Link>
-                        </Button>
-                        <Button asChild className="flex-1">
-                          <Link href={`/dashboard/club/events/${event.id}/edit`}>Edit</Link>
-                        </Button>
-                      </div>
-                    }
-                  />
+                  <EventCard key={event.id} event={event} showStatus />
                 ))}
               </div>
             ) : (
-              <EmptyState message="No rejected events" />
+              <div className="text-center py-12 text-muted-foreground">
+                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No rejected events</p>
+              </div>
             )}
           </TabsContent>
         </Tabs>
       </main>
-    </div>
-  )
-}
-
-function EmptyState({ message = "No events yet" }: { message?: string }) {
-  return (
-    <div className="text-center py-12 text-muted-foreground">
-      <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-      <p>{message}</p>
-      <Button asChild className="mt-4">
-        <Link href="/dashboard/club/create">Create Your First Event</Link>
-      </Button>
     </div>
   )
 }
